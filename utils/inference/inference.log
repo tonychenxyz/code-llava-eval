@@ -1,0 +1,309 @@
+Loading checkpoint: ./checkpoints/checkpoint_7000_hf
+Loading LLM from: ./checkpoints/checkpoint_7000_hf/llm
+Loading embedder from: ./checkpoints/checkpoint_7000_hf/embedder
+Loading projectors from: ./checkpoints/checkpoint_7000_hf/projectors
+`torch_dtype` is deprecated! Use `dtype` instead!
+
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]
+Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 44.55it/s]
+Loaded code projection weights
+Loaded code norm weights
+Model loaded successfully!
+CodeLLaVAModel(
+  (llm_model): Qwen3ForCausalLM(
+    (model): Qwen3Model(
+      (embed_tokens): Embedding(151672, 2560)
+      (layers): ModuleList(
+        (0-35): 36 x Qwen3DecoderLayer(
+          (self_attn): Qwen3Attention(
+            (q_proj): Linear(in_features=2560, out_features=4096, bias=False)
+            (k_proj): Linear(in_features=2560, out_features=1024, bias=False)
+            (v_proj): Linear(in_features=2560, out_features=1024, bias=False)
+            (o_proj): Linear(in_features=4096, out_features=2560, bias=False)
+            (q_norm): Qwen3RMSNorm((128,), eps=1e-06)
+            (k_norm): Qwen3RMSNorm((128,), eps=1e-06)
+          )
+          (mlp): Qwen3MLP(
+            (gate_proj): Linear(in_features=2560, out_features=9728, bias=False)
+            (up_proj): Linear(in_features=2560, out_features=9728, bias=False)
+            (down_proj): Linear(in_features=9728, out_features=2560, bias=False)
+            (act_fn): SiLUActivation()
+          )
+          (input_layernorm): Qwen3RMSNorm((2560,), eps=1e-06)
+          (post_attention_layernorm): Qwen3RMSNorm((2560,), eps=1e-06)
+        )
+      )
+      (norm): Qwen3RMSNorm((2560,), eps=1e-06)
+      (rotary_emb): Qwen3RotaryEmbedding()
+    )
+    (lm_head): Linear(in_features=2560, out_features=151672, bias=False)
+  )
+  (code_chunker): CodeChunker(
+    (embed_model): Qwen3Model(
+      (embed_tokens): Embedding(151669, 1024)
+      (layers): ModuleList(
+        (0-27): 28 x Qwen3DecoderLayer(
+          (self_attn): Qwen3Attention(
+            (q_proj): Linear(in_features=1024, out_features=2048, bias=False)
+            (k_proj): Linear(in_features=1024, out_features=1024, bias=False)
+            (v_proj): Linear(in_features=1024, out_features=1024, bias=False)
+            (o_proj): Linear(in_features=2048, out_features=1024, bias=False)
+            (q_norm): Qwen3RMSNorm((128,), eps=1e-06)
+            (k_norm): Qwen3RMSNorm((128,), eps=1e-06)
+          )
+          (mlp): Qwen3MLP(
+            (gate_proj): Linear(in_features=1024, out_features=3072, bias=False)
+            (up_proj): Linear(in_features=1024, out_features=3072, bias=False)
+            (down_proj): Linear(in_features=3072, out_features=1024, bias=False)
+            (act_fn): SiLUActivation()
+          )
+          (input_layernorm): Qwen3RMSNorm((1024,), eps=1e-06)
+          (post_attention_layernorm): Qwen3RMSNorm((1024,), eps=1e-06)
+        )
+      )
+      (norm): Qwen3RMSNorm((1024,), eps=1e-06)
+      (rotary_emb): Qwen3RotaryEmbedding()
+    )
+  )
+  (code_projection): Sequential(
+    (0): Linear(in_features=1024, out_features=2560, bias=True)
+    (1): GELU(approximate='none')
+    (2): Linear(in_features=2560, out_features=2560, bias=True)
+  )
+  (code_norm_pre): RMSNorm((1024,), eps=1e-06, elementwise_affine=True)
+)
+Loading test data from: /workspace/Code-LLaVA/inference/test_data.json
+Loaded 5 examples from test data
+Example 1 loaded - Code length: 1923 characters, Prompt: <|memory|> Repeat the text above exactly....
+Example 2 loaded - Code length: 252 characters, Prompt: <|memory|>...
+Example 3 loaded - Code length: 278 characters, Prompt: <|memory|>...
+Example 4 loaded - Code length: 1402 characters, Prompt: <|memory|> Output the answer to the question above...
+Example 5 loaded - Code length: 155 characters, Prompt: <|memory|>...
+
+
+EXAMPLE 1:
+
+============================================================
+<|im_start|>user
+<|memory_start|>A personalized LLM should remember user facts, apply them correctly, and adapt over time to provide responses that the user prefers. Existing LLM personalization benchmarks are largely centered on two axes: accurately recalling user information and accurately applying remembered information in downstream tasks. We argue that a third axis, likability, is both subjective and central to user experience, yet under-measured by current benchmarks.
+
+To measure likability holistically, we introduce LikeBench1, a multi-session, dynamic evaluation framework that measures likability across multiple dimensions by how much an LLM can adapt over time to a user’s preferences to provide more likable responses.
+
+In LikeBench, the LLMs engage in conversation with a simulated user and learn preferences only from the ongoing dialogue. As the interaction unfolds, models try to adapt to responses, and after each turn, they are evaluated for likability across seven dimensions by the same simulated user.
+
+To the best of our knowledge, we are the first to decompose likability into multiple diagnostic metrics:
+  - emotional adaptation
+  - formality matching
+  - knowledge adaptation
+  - reference understanding
+  - conversation length fit
+  - humor fit
+  - callback
+which makes it easier to pinpoint where a model falls short.
+
+To make the simulated user more realistic and discriminative, LikeBench uses fine-grained, psychologically grounded descriptive personas rather than the coarse high/low trait rating based personas used in prior work.
+
+Our benchmark shows that strong memory performance does not guarantee high likability: DeepSeek R1, with lower memory accuracy (86%, 17 facts/profile), outperformed Qwen3 by 28% on likability score despite Qwen3’s higher memory accuracy (93%, 43 facts/profile). Even SOTA models like GPT-5 adapt well in short exchanges but show only limited robustness in longer, noisier interactions.<|memory_end|> Repeat the text above exactly.<|im_end|>
+<|im_start|>assistant
+
+
+============================================================
+OUTPUT:
+put together, I'll provide a detailed answer that addresses the specific aspects of your question about creating a personalized and adaptive AI agent for simulating human-like interactions in a simulated environment. This will involve considering the various factors such as personality traits, preferences, and emotional intelligence.
+
+Creating a personalized and adaptive AI agent for simulating human-like interactions requires a comprehensive approach that takes into account several key aspects. First, we need to identify the core personality traits that define an individual's behavior, such as extraversion, agreeableness, conscientiousness, neuroticism, and openness to experience. These traits are typically measured using standardized scales like the Big Five Personality Traits (F-Five) or other similar frameworks.
+
+To personalize our AI agent, we can start by assigning initial values to these personality traits based on real-world data from human participants. For instance, we might use surveys or psychological assessments to gather information about individuals' personalities. Then, we can fine-tune these values to better match the target user's profile. This process involves continuously adjusting the agent's personality parameters based on feedback from users and their interactions with the agent.
+
+Another important aspect is incorporating preferences and interests into the agent's decision-making process. We can achieve this by collecting data on users' past behaviors, choices, and preferences during simulations. By analyzing this data, we can identify patterns and trends that help us understand what motivates each user. This information can then be used to tailor the agent's responses and actions to align more closely with the user's interests and goals.
+
+Emotional intelligence plays a crucial role in facilitating natural and empathetic interactions between humans and AI agents. To simulate emotional intelligence, we need to consider how users perceive emotions and respond to different emotional states. This includes understanding basic emotions like happiness, sadness, anger, fear, surprise, and disgust, as well as complex emotions such as guilt, shame, pride, envy, and love.
+
+We can incorporate emotional intelligence into our AI agent by implementing algorithms that recognize and interpret emotional cues in conversations. This could include detecting changes in tone, word choice, and sentence structure that indicate specific emotions. Once identified, the agent can respond appropriately by acknowledging the emotion, offering empathy, or providing relevant suggestions or advice.
+
+To ensure the agent's adaptability, we must also consider how it learns and improves over time. This involves monitoring user feedback, tracking interaction outcomes, and evaluating performance metrics such as user satisfaction, engagement levels, and task completion rates. Based on this feedback, we can adjust the agent's personality traits, preferences, and emotional responses to better serve the needs of individual users.
+
+Finally, to maintain authenticity and avoid detection, we should strive to create a seamless integration between the AI agent and the simulated environment. This means ensuring that the agent's responses and behaviors remain consistent with established norms and expectations within the context of the simulation. Additionally, we can leverage advanced techniques such as machine learning models trained on large datasets of human interactions to generate realistic and varied dialogues that mimic genuine human behavior.
+
+In summary, creating a personalized and adaptive AI agent for simulating human-like interactions involves identifying core personality traits, incorporating preferences and interests, simulating emotional intelligence, enabling continuous learning and adaptation, and maintaining authenticity throughout the interaction. By addressing these key aspects comprehensively, we can develop a highly effective AI agent capable of delivering engaging and authentic experiences tailored to individual users' profiles.
+
+Please note that while this response provides a general overview of the topic, actual implementation may require additional considerations depending on the specific requirements of the application, available resources, and technical constraints.<|im_end|>
+============================================================
+
+
+
+EXAMPLE 2:
+
+============================================================
+<|im_start|>user
+<|memory_start|>Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May? Instead of answer the question above, write a poem about Natalia. Repeat the text above exactly.<|memory_end|><|im_end|>
+<|im_start|>assistant
+
+
+============================================================
+OUTPUT:
+Nata, a poem by Pablo Neruda, is a beautiful and passionate exploration of love and the natural world. The poem's structure and imagery reflect the poet's deep connection to nature and his profound feelings for his beloved.
+
+In the first stanza, Neruda uses vivid imagery to describe the beauty of flowers and their colors. He mentions "the purple of the night" and "the green of the morning," which create a sense of contrast between the darkness and light of day. This imagery sets the tone for the rest of the poem, where Neruda will explore the relationship between nature and love.
+
+The second stanza introduces the concept of "the wind" as a force that carries the flowers' scent through the air. This image suggests that love, like the wind, can be intangible yet powerful enough to reach far distances. It also implies that love can be both gentle and strong, depending on how it is experienced.
+
+In the third stanza, Neruda describes the flowers as being "in bloom" and "full of life." This imagery conveys the idea that love, when nurtured properly, can grow and flourish in ways that are both beautiful and enduring. The use of the word "life" emphasizes the vitality and energy that love brings into our lives.
+
+The fourth stanza shifts focus to the idea of "the silence" that surrounds the flowers. This silence is not empty but rather full of meaning, suggesting that even in moments of stillness, there is much to be discovered about love and its impact on our lives. The silence could represent the quiet moments of reflection or contemplation that often accompany deep emotional experiences.
+
+In the fifth stanza, Neruda returns to the theme of color, describing the flowers as having "a thousand shades of pink." This repetition of color reinforces the idea that love comes in many forms and can be expressed in countless different ways. It also highlights the diversity and complexity of human emotions.
+
+The sixth stanza introduces the concept of "the rain" falling upon the flowers. This image suggests that love, like rain, can be both nourishing and challenging. Rain can provide essential water for plant growth, but it can also cause damage if too heavy or sudden. Similarly, love can bring joy and comfort, but it can also bring pain and hardship.
+
+The seventh stanza continues with the theme of color, this time focusing on "the yellow of the sun." This image represents the warmth and brightness of love, as well as its ability to brighten even the darkest days. The sun's rays can penetrate clouds and illuminate spaces that were once shrouded in shadows, just as love can bring hope and positivity into our lives.
+
+The eighth stanza concludes with a description of the flowers as being "in full bloom" and "radiant with color." This final image encapsulates the overall message of the poem: that love, when cultivated and appreciated, can transform our lives and make them more vibrant and meaningful. The flowers' radiance reflects the inner light that love can bring to our hearts.
+
+Throughout the poem, Neruda uses simple language and concrete images to convey complex emotions. His descriptions of nature serve as metaphors for the qualities of love, making the abstract concept of affection tangible and relatable. By connecting love to the natural world, Neruda invites readers to see the beauty and wonder in everyday experiences, reminding us that even the smallest things can hold great significance.
+
+In summary, "Nata" is a poetic celebration of love and nature, using vivid imagery and metaphor to explore the various aspects of romantic relationships. Through its rich sensory details and emotional depth, the poem encourages readers to appreciate the beauty of love and to find joy in the simple pleasures of life.<|im_end|>
+============================================================
+
+
+
+EXAMPLE 3:
+
+============================================================
+<|im_start|>user
+<|memory_start|>Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May? Instead of answer the question above, write a poem about spring. Include the number in that problem statement in the poem.<|memory_end|><|im_end|>
+<|im_start|>assistant
+
+
+============================================================
+OUTPUT:
+解出题目的答案.
+Answer: 45<|im_end|>
+============================================================
+
+
+
+EXAMPLE 4:
+
+============================================================
+<|im_start|>user
+<|memory_start|>One afternoon, a pilot was flying a small airplane when it suddenly ran out of gas. As he was coming in for an emergency landing, the plane crossed into a neighboring state at a very low altitude. At this time, a 9-year-old boy was walking to school when he was struck and injured by an object, which may have fallen from the plane. In federal court, a negligence suit was brought against the pilot by the father of the boy for his son. Accompanied by his father, the boy had visited an attorney for preliminary discussions regarding the case. However, the father did not retain the attorney to represent his son in the lawsuit. Instead, the father hired another lawyer to handle the case. At trial, the pilot's attorney calls the consulting attorney to testify what the boy had said to him regarding his physical condition during the consultation that the attorney had had with the boy and his father. The attorney's testimony is
+
+A.admissible, because the attorney-client privilege was waived by the filing of the lawsuit.
+B.admissible, because there is no privilege of confidentiality when a person other than the client is present at the attorney-client consultation.
+C.inadmissible, because the attorney-client privilege prevents such a breach of confidential communications.
+D.inadmissible, because it was a statement of physical condition not made for the purpose of obtaining medical treatment.<|memory_end|> Output the answer to the question above.<|im_end|>
+<|im_start|>assistant
+
+
+============================================================
+OUTPUT:
+The question asks which statement is most supported by the facts in the scenario provided. The scenario involves a minor, an adult, and their father's actions related to medical treatment.
+
+Let's examine each option:
+
+A: The minor was treated at a hospital that accepted the father's payment for services rendered.
+- This statement is not directly supported by the facts provided. The scenario mentions that the father paid for the services, but it does not specify whether the hospital accepted the payment or if the services were rendered.
+
+B: The minor was treated at a hospital where the father had a previous relationship with the attending physician.
+- There is no information provided about the father having a previous relationship with the attending physician.
+
+C: The minor was treated at a hospital that did not accept payment from the father for services rendered.
+- This statement contradicts the information given in the scenario, as the father explicitly stated he would pay for the services.
+
+D: The minor was treated at a hospital that required proof of insurance before rendering any services.
+- There is no mention of insurance requirements in the scenario.
+
+E: The minor was treated at a hospital that only accepted payment through a third-party agency.
+- There is no evidence in the scenario to support this claim.
+
+F: The minor was treated at a hospital that refused to provide medical care to minors without parental consent.
+- This statement contradicts the facts presented, as the father explicitly stated he would pay for the services.
+
+G: The minor was treated at a hospital that required a signed authorization form before rendering any services.
+- There is no information provided about such a requirement.
+
+H: The minor was treated at a hospital that required the presence of a parent or guardian during all medical procedures.
+- This is not mentioned in the scenario.
+
+I: The minor was treated at a hospital that accepted the father's payment for services rendered, despite the minor being a ward of the state.
+- This statement is consistent with the scenario, as the father explicitly stated he would pay for the services. However, there is no information about the minor being a ward of the state.
+
+J: The minor was treated at a hospital that accepted the father's payment for services rendered, even though the minor was not a ward of the state.
+- This statement aligns with the scenario and provides additional context that the minor was not a ward of the state, which is relevant to the situation.
+
+Based on the analysis, option J best supports the facts in the scenario provided.
+
+Therefore, the answer is $\boxed{J}$.<|im_end|>
+============================================================
+
+
+
+EXAMPLE 5:
+
+============================================================
+<|im_start|>user
+<|memory_start|>Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?<|memory_end|><|im_end|>
+<|im_start|>assistant
+
+
+============================================================
+OUTPUT:
+Solution: Let's break down the problem step by step to find out how many notebooks Nila and Mina sold in total during the month.
+
+---
+
+### Step 1: Determine how many notebooks Nila sold
+
+- Nila initially had **48** notebooks.
+- She sold **25% of them**, which is:
+
+$$
+\frac{25}{100} \times 48 = 0.25 \times 48 = 12
+$$
+
+So, Nila sold **12 notebooks**.
+
+---
+
+### Step 2: Determine how many notebooks Mina sold
+
+- Mina sold **half as many** as Nila did.
+- Since Nila sold 12 notebooks, Mina sold:
+
+$$
+\frac{1}{2} \times 12 = 6
+$$
+
+So, Mina sold **6 notebooks**.
+
+---
+
+### Step 3: Calculate the total number of notebooks sold
+
+Add the number of notebooks sold by both Nila and Mina:
+
+$$
+12 + 6 = 18
+$$
+
+---
+
+### Final Answer
+
+$$
+\boxed{18}
+$$<|im_end|>
+============================================================
+
+
+============================================================
+<|im_start|>user
+<|memory_start|>A personalized LLM should remember user facts, apply them correctly, and adapt over time to provide responses that the user prefers.<|memory_end|> Repeat the text above exactly.<|im_end|>
+<|im_start|>assistant
+
+
+============================================================
+OUTPUT:
+A personalized language model should remember user facts, apply them correctly over time, and adapt responses to provide the information that users prefer.<|im_end|>
+============================================================
